@@ -14,6 +14,7 @@ class ExploreAgent(BaseAgent):
 
     @property
     def system_prompt(self) -> str:
+        """Return the system prompt for the ExploreAgent."""
         return (
             "You are ExploreAgent. You analyse a code repository and extract relevant context "
             "for a given task. Respond ONLY with a JSON object with these fields:\n"
@@ -42,8 +43,15 @@ class ExploreAgent(BaseAgent):
 
         try:
             text, tokens = self._call_api([{"role": "user", "content": prompt}], max_tokens=2048)
-            data = json.loads(text.strip())
-            context.explore_output = text
+            import logging
+            logging.getLogger(__name__).debug(f"ExploreAgent raw response: {text[:500]}")
+            text_clean = text.strip()
+            if text_clean.startswith("```"):
+                text_clean = "\n".join(text_clean.splitlines()[1:])
+            if text_clean.endswith("```"):
+                text_clean = "\n".join(text_clean.splitlines()[:-1])
+            data = json.loads(text_clean)
+            context.explore_output = text_clean
             context.save()
             return AgentResult(
                 agent_type="explore",
@@ -63,7 +71,7 @@ class ExploreAgent(BaseAgent):
             )
 
     def _sample_files(self, repo_root: Path, repo_map: str, max_files: int = 15) -> str:
-        """Extract content snippets from up to max_files files in the repository."""
+        """Extract content snippets from up to max_files files in the repository for analysis."""
         skip_ext = {".pyc", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico",
                     ".pdf", ".zip", ".tar", ".gz", ".lock"}
         snippets = []

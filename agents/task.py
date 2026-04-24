@@ -13,17 +13,18 @@ from .base import BaseAgent, AgentContext, AgentResult
 class TaskAgent(BaseAgent):
     def __init__(self, api_key: Optional[str] = None,
                  auto_commit: bool = True, dry_run: bool = False):
-        """Initialize the TaskAgent with optional API key and execution settings."""
+        """Initialize TaskAgent with API key, auto-commit, and dry-run settings."""
         super().__init__(api_key=api_key, model_tier="cheap")
         self.auto_commit = auto_commit
         self.dry_run = dry_run
 
     @property
     def system_prompt(self) -> str:
+        """Return the system prompt for TaskAgent."""
         return "You are TaskAgent. You execute coding subtasks precisely using Aider."
 
     def run(self, context: AgentContext) -> AgentResult:
-        """Execute all subtasks from the plan using Aider."""
+        """Execute all subtasks from the plan using Aider and return aggregated results."""
         start = time.time()
         try:
             plan_data = json.loads(context.plan) if context.plan else {}

@@ -156,6 +156,7 @@ class AgentPool:
         )
 
     def _trim_plan_to_rejected(self, context, rejected_ids):
+        """Remove all subtasks except those in rejected_ids from the plan."""
         import json
         try:
             plan_data = json.loads(context.plan)
@@ -168,6 +169,7 @@ class AgentPool:
             pass
 
     def _fail_pipeline(self, reason, start, context):
+        """Create a failed AgentResult with the given reason and elapsed time."""
         logger.error(f"Pipeline failed: {reason}")
         return AgentResult(
             agent_type="pipeline", success=False,
@@ -176,13 +178,16 @@ class AgentPool:
         )
 
     def _step(self, name):
+        """Log a formatted step header."""
         logger.info(f"\n{'─' * 50}\n  STEP: {name}\n{'─' * 50}")
 
     def _print_result(self, result):
+        """Log a summary of an agent result."""
         status = "OK" if result.success else "FAIL"
         logger.info(f"[{status}] [{result.agent_type}] {result.output[:200]}")
 
     def _print_banner(self, task):
+        """Log the pipeline startup banner with task and repo information."""
         logger.info(
             f"\n{'=' * 50}\n  aider-agents pipeline\n"
             f"  task: {task[:80]}\n  repo: {self.repo_root}\n{'=' * 50}"

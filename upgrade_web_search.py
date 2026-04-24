@@ -1,4 +1,4 @@
-"""WebSearchAgent - searches the web via Tavily and synthesises with Claude."""
+content = '''"""WebSearchAgent - searches the web via Tavily and synthesises with Claude."""
 from __future__ import annotations
 import time
 from dataclasses import dataclass, field
@@ -25,14 +25,14 @@ class SearchSummary:
     answer: str = ""          # Tavily include_answer field
 
     def to_markdown(self) -> str:
-        """Render the search summary as a markdown-formatted string."""
-        lines = [f"## Web search: {self.query}\n"]
+        """Render the summary as a markdown string."""
+        lines = [f"## Web search: {self.query}\\n"]
         if self.answer:
-            lines += [f"**Quick answer:** {self.answer}\n"]
-        lines += [self.synthesis, "\n### Sources\n"]
+            lines += [f"**Quick answer:** {self.answer}\\n"]
+        lines += [self.synthesis, "\\n### Sources\\n"]
         for r in self.results:
             lines.append(f"- [{r.title}]({r.url})")
-        return "\n".join(lines)
+        return "\\n".join(lines)
 
 
 class WebSearchAgent(BaseAgent):
@@ -75,7 +75,7 @@ class WebSearchAgent(BaseAgent):
         topic: str = "general",
         time_range: Optional[str] = None,
     ) -> Optional[SearchSummary]:
-        """Execute a web search via Tavily API and return synthesized results."""
+        """Run a Tavily search and return a SearchSummary, or None on failure."""
         try:
             client = self._get_client()
         except ImportError:
@@ -120,14 +120,14 @@ class WebSearchAgent(BaseAgent):
         answer = response.get("answer", "")
 
         # Synthesise with Claude — use answer + top snippets to keep tokens low
-        context_text = "\n\n".join(
-            f"[{r.title}]({r.url})\n{r.content[:400]}"
+        context_text = "\\n\\n".join(
+            f"[{r.title}]({r.url})\\n{r.content[:400]}"
             for r in results[:5]
         )
         synthesis_prompt = (
-            f"Query: {query}\n\n"
-            f"Tavily answer: {answer}\n\n"
-            f"Top results:\n{context_text}\n\n"
+            f"Query: {query}\\n\\n"
+            f"Tavily answer: {answer}\\n\\n"
+            f"Top results:\\n{context_text}\\n\\n"
             "Synthesise the key findings in 3-5 concise bullet points "
             "relevant to a coding task."
         )
@@ -147,7 +147,7 @@ class WebSearchAgent(BaseAgent):
         )
 
     def run(self, context: AgentContext) -> AgentResult:
-        """Execute web search for the given task and store results in context."""
+        """Run web search for the task and store results in context metadata."""
         start = time.time()
 
         # Best practice: break compound task into focused query
@@ -175,3 +175,8 @@ class WebSearchAgent(BaseAgent):
             data={"synthesis": summary.synthesis, "answer": summary.answer},
             duration_seconds=time.time() - start,
         )
+'''
+
+with open("agents/web_search.py", "w", encoding="utf-8") as f:
+    f.write(content)
+print("Done.")

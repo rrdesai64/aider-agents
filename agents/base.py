@@ -91,15 +91,17 @@ class BaseAgent:
     """Abstract base for all subagents."""
 
     def __init__(self, api_key: Optional[str] = None, model_tier: str = "cheap"):
+        """Initialize the base agent with API key and model tier."""
         self.api_key = api_key
         self.model = MODEL_ROUTING.get(model_tier, MODEL_ROUTING["cheap"])
 
     @property
     def system_prompt(self) -> str:
+        """Return the system prompt for this agent."""
         raise NotImplementedError
 
     def _call_api(self, messages: list[dict], max_tokens: int = 4096) -> tuple[str, int]:
-        """Call the Anthropic API and return the response text and token count."""
+        """Call the Anthropic API and return response text and token count."""
         import anthropic
         client = anthropic.Anthropic(api_key=self.api_key)
         response = client.messages.create(
@@ -113,7 +115,7 @@ class BaseAgent:
         return text, tokens
 
     def _build_repo_map(self, repo_root: Path, max_files: int = 100) -> str:
-        """Build a simple file listing by walking the repository."""
+        """Build a file listing by walking the repository."""
         lines = []
         skip = {".git", "__pycache__", ".venv", "venv", "node_modules", ".aider"}
         count = 0
@@ -129,5 +131,5 @@ class BaseAgent:
         return "\n".join(lines)
 
     def run(self, context: AgentContext) -> AgentResult:
-        """Execute the agent with the given context and return the result."""
+        """Execute the agent with given context and return result."""
         raise NotImplementedError

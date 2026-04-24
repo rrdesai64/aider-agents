@@ -7,6 +7,7 @@ REQUIRED_AIDER_MIN = (0, 50, 0)
 
 
 def _parse_version(v: str) -> tuple:
+    """Parse a version string into a tuple of integers."""
     parts = []
     for p in v.split(".")[:3]:
         try:
