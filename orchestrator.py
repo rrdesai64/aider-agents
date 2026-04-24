@@ -29,6 +29,7 @@ class AgentPool:
         skip_review: bool = False,
         verbose: bool = False,
     ):
+        """Initialize the AgentPool with configuration and instantiate all agents."""
         self.repo_root = repo_root or Path.cwd()
         self.api_key = api_key
         self.auto_commit = auto_commit
@@ -55,6 +56,7 @@ class AgentPool:
         )
 
     def run(self, task: str, resume: bool = False) -> AgentResult:
+        """Execute the full agent pipeline for the given task with optional resume capability."""
         pipeline_start = time.time()
 
         if resume:

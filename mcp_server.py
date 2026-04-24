@@ -17,6 +17,7 @@ app = Server("aider-agents")
 
 
 def get_pool(repo_root: str = ".") -> AgentPool:
+    """Create and return an AgentPool instance for the given repository."""
     return AgentPool(
         repo_root=Path(repo_root),
         api_key=os.environ.get("ANTHROPIC_API_KEY"),
@@ -27,6 +28,7 @@ def get_pool(repo_root: str = ".") -> AgentPool:
 
 @app.list_tools()
 async def list_tools() -> list[Tool]:
+    """Return the list of available MCP tools for aider-agents."""
     return [
         Tool(name="run_agent_pipeline",
              description="Run the full pipeline: Explore -> Plan -> Task -> Review.",
@@ -77,6 +79,7 @@ async def list_tools() -> list[Tool]:
 
 @app.call_tool()
 async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
+    """Execute the requested MCP tool and return results as TextContent."""
     repo_root = arguments.get("repo_root", ".")
     task = arguments.get("task", "")
     try:
@@ -138,13 +141,14 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             }
             return [TextContent(type="text", text=json.dumps(state, indent=2))]
         else:
-            return [TextContent(type="text", text=f'{{"error": "Unknown tool: {name}"}')]
+            return [TextContent(type="text", text=json.dumps({"error": f"Unknown tool: {name}"}))]
     except Exception as e:
         logger.exception(f"Tool {name} failed")
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
 
 
 async def main():
+    """Start the aider-agents MCP server using stdio transport."""
     logging.basicConfig(level=logging.INFO)
     logger.info("aider-agents MCP server starting (stdio)")
     async with stdio_server() as (read_stream, write_stream):

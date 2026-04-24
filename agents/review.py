@@ -8,10 +8,12 @@ from .base import BaseAgent, AgentContext, AgentResult
 
 class ReviewAgent(BaseAgent):
     def __init__(self, api_key=None):
+        """Initialize the ReviewAgent with optional API key."""
         super().__init__(api_key=api_key, model_tier="capable")
 
     @property
     def system_prompt(self) -> str:
+        """Return the system prompt for the review agent."""
         return (
             "You are ReviewAgent. You review the results of a coding task and decide whether "
             "the work is complete, partially complete, or needs to be redone.\n"
@@ -25,6 +27,7 @@ class ReviewAgent(BaseAgent):
         )
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Review task execution results and return approval verdict."""
         start = time.time()
         task_summary = (json.dumps(context.task_results, indent=2)
                         if context.task_results else "No results")

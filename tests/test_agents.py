@@ -12,11 +12,13 @@ from agents.review import ReviewAgent
 
 
 def make_context(tmp_path: Path, task: str = "test task") -> AgentContext:
+    """Create a test AgentContext with the given task and temporary directory."""
     return AgentContext(task=task, repo_root=tmp_path)
 
 
 class TestAgentContext:
     def test_save_and_load(self, tmp_path):
+        """Test saving and loading AgentContext to/from disk."""
         ctx = AgentContext(task="hello", repo_root=tmp_path)
         ctx.plan = '{"subtasks": []}'
         ctx.review_status = "approved"
@@ -27,22 +29,26 @@ class TestAgentContext:
         assert loaded.review_status == "approved"
 
     def test_load_missing(self, tmp_path):
+        """Test loading AgentContext when state file doesn't exist."""
         result = AgentContext.load(tmp_path)
         assert result is None
 
 
 class TestModelRouting:
     def test_cheap_model_exists(self):
+        """Test that cheap model tier is defined in MODEL_ROUTING."""
         assert "cheap" in MODEL_ROUTING
         assert MODEL_ROUTING["cheap"]
 
     def test_capable_model_exists(self):
+        """Test that capable model tier is defined in MODEL_ROUTING."""
         assert "capable" in MODEL_ROUTING
         assert MODEL_ROUTING["capable"]
 
 
 class TestExploreAgent:
     def test_run_success(self, tmp_path):
+        """Test ExploreAgent successfully explores a repository."""
         (tmp_path / "main.py").write_text("def hello(): pass")
         ctx = make_context(tmp_path)
         mock_response = json.dumps({
@@ -60,6 +66,7 @@ class TestExploreAgent:
         assert ctx.explore_output == mock_response
 
     def test_run_api_error(self, tmp_path):
+        """Test ExploreAgent handles API errors gracefully."""
         ctx = make_context(tmp_path)
         agent = ExploreAgent(api_key="test")
         with patch.object(agent, "_call_api", side_effect=Exception("API down")):
@@ -70,6 +77,7 @@ class TestExploreAgent:
 
 class TestPlanAgent:
     def test_run_success(self, tmp_path):
+        """Test PlanAgent successfully creates a plan."""
         ctx = make_context(tmp_path, task="add tests to main.py")
         ctx.explore_output = '{"summary": "simple module"}'
         mock_plan = json.dumps({
@@ -93,6 +101,7 @@ class TestPlanAgent:
 
 class TestReviewAgent:
     def test_run_approved(self, tmp_path):
+        """Test ReviewAgent approves successful task results."""
         ctx = make_context(tmp_path)
         ctx.task_results = [{"subtask_id": "task-1", "success": True, "output": "done"}]
         mock_review = json.dumps({
@@ -109,6 +118,7 @@ class TestReviewAgent:
         assert ctx.review_status == "approved"
 
     def test_run_rejected(self, tmp_path):
+        """Test ReviewAgent rejects failed task results."""
         ctx = make_context(tmp_path)
         ctx.task_results = [{"subtask_id": "task-1", "success": False, "output": "failed"}]
         mock_review = json.dumps({

@@ -9,6 +9,7 @@ from .base import BaseAgent, AgentContext, AgentResult
 
 class ExploreAgent(BaseAgent):
     def __init__(self, api_key=None):
+        """Initialize the ExploreAgent with optional API key."""
         super().__init__(api_key=api_key, model_tier="cheap")
 
     @property
@@ -25,6 +26,7 @@ class ExploreAgent(BaseAgent):
         )
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Analyze the repository and extract relevant context for the task."""
         start = time.time()
         if not context.repo_map:
             context.repo_map = self._build_repo_map(context.repo_root)
@@ -61,6 +63,7 @@ class ExploreAgent(BaseAgent):
             )
 
     def _sample_files(self, repo_root: Path, repo_map: str, max_files: int = 15) -> str:
+        """Extract content snippets from up to max_files files in the repository."""
         skip_ext = {".pyc", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico",
                     ".pdf", ".zip", ".tar", ".gz", ".lock"}
         snippets = []
@@ -69,7 +72,7 @@ class ExploreAgent(BaseAgent):
             if count >= max_files:
                 break
             p = repo_root / line.strip()
-            if p.is_file() and p.suffix not in skip_ext:
+            if p.is_file() and p.suffix not in skip_ext and p.name not in {".env", ".env.example", "secrets.yaml", "secrets.yml"}:
                 try:
                     content = p.read_text(encoding="utf-8", errors="ignore")
                     lines = content.splitlines()[:80]

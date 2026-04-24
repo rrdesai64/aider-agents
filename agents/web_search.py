@@ -22,6 +22,7 @@ class SearchSummary:
     synthesis: str = ""
 
     def to_markdown(self) -> str:
+        """Convert search summary to markdown format."""
         lines = [f"## Web search: {self.query}\n", self.synthesis, "\n### Sources\n"]
         for r in self.results:
             lines.append(f"- [{r.title}]({r.url})")
@@ -56,6 +57,7 @@ class WebSearchAgent(BaseAgent):
         exclude_domains: Optional[list] = None,
         topic: str = "general",
     ) -> Optional[SearchSummary]:
+        """Search the web using Tavily and synthesize results."""
         try:
             from tavily import TavilyClient
         except ImportError:
@@ -99,6 +101,7 @@ class WebSearchAgent(BaseAgent):
         return SearchSummary(query=query, results=results, synthesis=synthesis)
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Execute web search for the given task context."""
         start = time.time()
         summary = self.search(context.task)
         if summary is None:

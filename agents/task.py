@@ -13,6 +13,7 @@ from .base import BaseAgent, AgentContext, AgentResult
 class TaskAgent(BaseAgent):
     def __init__(self, api_key: Optional[str] = None,
                  auto_commit: bool = True, dry_run: bool = False):
+        """Initialize the TaskAgent with optional API key and execution settings."""
         super().__init__(api_key=api_key, model_tier="cheap")
         self.auto_commit = auto_commit
         self.dry_run = dry_run
@@ -22,6 +23,7 @@ class TaskAgent(BaseAgent):
         return "You are TaskAgent. You execute coding subtasks precisely using Aider."
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Execute all subtasks from the plan using Aider."""
         start = time.time()
         try:
             plan_data = json.loads(context.plan) if context.plan else {}
@@ -55,6 +57,7 @@ class TaskAgent(BaseAgent):
         )
 
     def _run_subtask(self, subtask: dict, context: AgentContext) -> dict:
+        """Execute a single subtask by invoking Aider with the appropriate files and message."""
         task_start = time.time()
         subtask_id = subtask.get("id", "task-?")
         description = subtask.get("description", "")
@@ -73,8 +76,8 @@ class TaskAgent(BaseAgent):
             cmd += ["--no-auto-commits"]
 
         all_files = files_to_edit + files_to_create
-        if all_files:
-            cmd += all_files
+        for f in all_files:
+            cmd += ["--file", f]
 
         cmd += ["--message", description]
 

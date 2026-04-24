@@ -8,10 +8,12 @@ from .base import BaseAgent, AgentContext, AgentResult
 
 class PlanAgent(BaseAgent):
     def __init__(self, api_key=None):
+        """Initialize the PlanAgent with optional API key."""
         super().__init__(api_key=api_key, model_tier="capable")
 
     @property
     def system_prompt(self) -> str:
+        """Return the system prompt for the PlanAgent."""
         return (
             "You are PlanAgent. You design a precise, atomic subtask list for a coding task. "
             "Respond ONLY with a JSON object with these fields:\n"
@@ -30,6 +32,7 @@ class PlanAgent(BaseAgent):
         )
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Execute the planning phase and generate a subtask plan."""
         start = time.time()
         explore_section = ""
         if context.explore_output:

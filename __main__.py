@@ -2,6 +2,8 @@
 aider-agents CLI
 """
 from __future__ import annotations
+from dotenv import load_dotenv
+load_dotenv()
 import argparse
 import asyncio
 import json
@@ -12,6 +14,7 @@ from pathlib import Path
 
 
 def main():
+    """Parse command-line arguments and run the aider-agents system or MCP server."""
     parser = argparse.ArgumentParser(
         prog="aider-agents",
         description="Subagent system for Aider - Explore, Plan, Task, Review",

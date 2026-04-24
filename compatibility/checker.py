@@ -17,6 +17,7 @@ def _parse_version(v: str) -> tuple:
 
 
 def check_aider() -> dict:
+    """Check if aider-chat is installed and meets minimum version requirements."""
     try:
         version_str = importlib.metadata.version("aider-chat")
         version = _parse_version(version_str)
@@ -41,6 +42,7 @@ def check_aider() -> dict:
 
 
 def check_anthropic() -> dict:
+    """Check if anthropic package is installed."""
     try:
         version_str = importlib.metadata.version("anthropic")
         return {"installed": True, "version": version_str, "compatible": True, "message": "OK"}
@@ -50,6 +52,7 @@ def check_anthropic() -> dict:
 
 
 def check_mcp() -> dict:
+    """Check if mcp package is installed."""
     try:
         version_str = importlib.metadata.version("mcp")
         return {"installed": True, "version": version_str, "compatible": True, "message": "OK"}
@@ -59,6 +62,7 @@ def check_mcp() -> dict:
 
 
 def main():
+    """Run all compatibility checks and report results."""
     print("aider-agents compatibility check")
     print("=" * 40)
     checks = {

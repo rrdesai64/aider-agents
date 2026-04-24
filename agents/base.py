@@ -26,6 +26,7 @@ class AgentResult:
     duration_seconds: float = 0.0
 
     def to_dict(self) -> dict:
+        """Convert the agent result to a dictionary."""
         return {
             "agent_type": self.agent_type,
             "success": self.success,
@@ -50,6 +51,7 @@ class AgentContext:
     metadata: dict = field(default_factory=dict)
 
     def save(self):
+        """Save the agent context state to a JSON file."""
         state = {
             "task": self.task,
             "repo_root": str(self.repo_root),
@@ -66,6 +68,7 @@ class AgentContext:
 
     @classmethod
     def load(cls, repo_root: Path) -> Optional["AgentContext"]:
+        """Load the agent context state from a JSON file."""
         state_path = repo_root / STATE_FILE
         if not state_path.exists():
             return None
@@ -96,7 +99,7 @@ class BaseAgent:
         raise NotImplementedError
 
     def _call_api(self, messages: list[dict], max_tokens: int = 4096) -> tuple[str, int]:
-        """Call Anthropic API. Returns (text, tokens_used)."""
+        """Call the Anthropic API and return the response text and token count."""
         import anthropic
         client = anthropic.Anthropic(api_key=self.api_key)
         response = client.messages.create(
@@ -110,7 +113,7 @@ class BaseAgent:
         return text, tokens
 
     def _build_repo_map(self, repo_root: Path, max_files: int = 100) -> str:
-        """Walk repo and build a simple file listing."""
+        """Build a simple file listing by walking the repository."""
         lines = []
         skip = {".git", "__pycache__", ".venv", "venv", "node_modules", ".aider"}
         count = 0
@@ -126,4 +129,5 @@ class BaseAgent:
         return "\n".join(lines)
 
     def run(self, context: AgentContext) -> AgentResult:
+        """Execute the agent with the given context and return the result."""
         raise NotImplementedError
