@@ -1,0 +1,21 @@
+{
+  "task": "add docstrings to all public functions in utils.py",
+  "repo_root": "/path/to/your/repo",
+  "repo_map": "main.py\n  hello()\nutils.py\n  add(a, b)\n  subtract(a, b)...",
+  "explore_output": "{\"relevant_files\": [\"utils.py\"], \"patterns\": [\"functions without docstrings\"], \"dependencies\": [], \"risks\": [], \"summary\": \"utils.py has 2 public functions without docstrings.\"}",
+  "plan": "{\"approach\": \"Add Google-style docstrings to each function\", \"subtasks\": [{\"id\": \"task-1\", \"description\": \"Add docstring to add()\", \"files_to_edit\": [\"utils.py\"], \"files_to_create\": [], \"depends_on\": [], \"model_hint\": \"cheap\"}], \"risks\": [], \"estimated_complexity\": \"low\", \"parallel_safe\": true}",
+  "task_results": [
+    {
+      "agent_type": "task",
+      "success": true,
+      "output": "Added docstrings to add() and subtract() in utils.py",
+      "data": {"subtask_id": "task-1", "returncode": 0},
+      "error": null,
+      "tokens_used": 0,
+      "duration_seconds": 12.4
+    }
+  ],
+  "review_status": "approved",
+  "review_notes": "Both functions now have clear, accurate docstrings.",
+  "metadata": {}
+}

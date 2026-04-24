@@ -1,0 +1,41 @@
+name: Aider Compatibility
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # every Monday 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        aider-version: ["latest", "0.50.0", "0.55.0"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install aider-agents
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Install specific aider-chat version
+        run: |
+          if [ "${{ matrix.aider-version }}" = "latest" ]; then
+            pip install aider-chat
+          else
+            pip install aider-chat==${{ matrix.aider-version }}
+          fi
+
+      - name: Run compatibility check
+        run: |
+          aider-agents-check
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short
